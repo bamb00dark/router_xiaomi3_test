@@ -2,7 +2,7 @@ from selenium import webdriver
 from selenium.common.exceptions import NoSuchElementException
 from time import sleep
 
-ROUTER_LOGIN_PWD = 'yangfan703'
+ROUTER_LOGIN_PWD = 'password'
 ROUTER_ADDRESS   = 'http://192.168.77.1'
 
 browser = webdriver.Chrome()
