@@ -3,7 +3,7 @@ from selenium.common.exceptions import NoSuchElementException
 import time
 
 ROUTER_LOGIN_PASSWORD = 'yangfan703'
-ROUTER_ADDRESS   = 'http://192.168.77.1'
+ROUTER_ADDRESS        = 'http://192.168.77.1'
 
 def get_local_time():
 	return time.asctime(time.localtime(time.time()))
@@ -42,28 +42,28 @@ def miwifi_switch_to_normal_setting(browser):
 
 def miwifi_wifi_24_save_config(browser):
 	browser.find_elements_by_xpath(".//button[@type='submit']")[0].click()
-	print("[LOG]-[{0}]-[wifi setting]: save the configuration of 2.4GHz wifi.".format(get_local_time()))
+	print("[LOG]-[{0}]-[wifi setting]: save the 2.4GHz configuration.".format(get_local_time()))
 
 def miwifi_wifi_50_save_config(browser):
 	browser.find_elements_by_xpath(".//button[@type='submit']")[1].click()
-	print("[LOG]-[{0}]-[wifi setting]: save the configuration of 5.0GHz wifi.".format(get_local_time()))
+	print("[LOG]-[{0}]-[wifi setting]: save the 5.0GHz configuration.".format(get_local_time()))
 
 def miwifi_wifi_guest_save_config(browser):
 	browser.find_elements_by_xpath(".//button[@type='submit']")[2].click()
-	print("[LOG]-[{0}]-[wifi setting]: save the configuration of guest wifi.".format(get_local_time()))
+	print("[LOG]-[{0}]-[wifi setting]: save the guest wifi configuration.".format(get_local_time()))
 
 def miwifi_wifi_panel_confirm_ok(browser):
 	browser.find_element_by_xpath(".//div[@class='d-ft']/a[1]/span").click()
-	print("[LOG]-[{0}]-[wifi setting confirm panel] OK.".format(get_local_time()))
+	print("[LOG]-[{0}]-[wifi setting confirm panel] ok button clicked.".format(get_local_time()))
 	time.sleep(30)
 
 def miwifi_wifi_panel_confirm_cancel(browser):
 	browser.find_element_by_xpath(".//div[@class='d-ft']/a[2]/span").click()
-	print("[LOG]-[{0}]-[wifi setting confirm panel] Cancel.".format(get_local_time()))
+	print("[LOG]-[{0}]-[wifi setting confirm panel] cancel button clicked.".format(get_local_time()))
 
 def miwifi_wifi_panel_confirm_close(browser):
 	browser.find_element_by_xpath(".//span[@class='close d-close']").click()
-	print("[LOG]-[{0}]-[wifi setting confirm panel] Close.".format(get_local_time()))
+	print("[LOG]-[{0}]-[wifi setting confirm panel] close panel.".format(get_local_time()))
 
 def miwifi_wifi_24_switch_on(browser):
 	browser.find_elements_by_xpath(".//input[@type='radio' and @value='1']")[0].click()
@@ -71,17 +71,53 @@ def miwifi_wifi_24_switch_on(browser):
 def miwifi_wifi_24_switch_off(browser):
 	browser.find_elements_by_xpath(".//input[@type='radio' and @value='0']")[0].click()
 
+def miwifi_wifi_24_input_ssid(browser, ssid):
+	ssid_length = len(ssid)
+	if (ssid_length < 1 or ssid_length > 31):
+		print("[ERROR]-[{0}]-[wifi setting] invalid 2.4G SSID name.".format(get_local_time()))
+		return
+	
+	textbox_ssid_24 = browser.find_elements_by_xpath(".//input[@type='text' and @name='ssid']")[0]
+	textbox_ssid_24.clear()
+	textbox_ssid_24.send_keys(ssid)
+	textbox_ssid_24.click() # make the save button visible
+	print("[LOG]-[{0}]-[wifi setting] 2.4G SSID is changed to {1}".format(get_local_time(), ssid))
+
 def miwifi_wifi_50_switch_on(browser):
 	browser.find_elements_by_xpath(".//input[@type='radio' and @value='1']")[1].click()
 
 def miwifi_wifi_50_switch_off(browser):
 	browser.find_elements_by_xpath(".//input[@type='radio' and @value='0']")[1].click()
 
+def miwifi_wifi_50_input_ssid(browser, ssid):
+	ssid_length = len(ssid)
+	if (ssid_length < 1 or ssid_length > 31):
+		print("[ERROR]-[{0}]-[wifi setting] invalid 5.0G SSID name.".format(get_local_time()))
+		return
+	
+	textbox_ssid_50 = browser.find_elements_by_xpath(".//input[@type='text' and @name='ssid']")[1]
+	textbox_ssid_50.clear()
+	textbox_ssid_50.send_keys(ssid)
+	textbox_ssid_50.click() # make the save button visible
+	print("[LOG]-[{0}]-[wifi setting] 5.0G SSID is changed to {1}".format(get_local_time(), ssid))
+
 def miwifi_wifi_guest_switch_on(browser):
 	browser.find_elements_by_xpath(".//input[@type='radio' and @value='1']")[2].click()
 
 def miwifi_wifi_guest_switch_off(browser):
 	browser.find_elements_by_xpath(".//input[@type='radio' and @value='0']")[2].click()
+
+def miwifi_wifi_guest_input_ssid(browser, ssid):
+	ssid_length = len(ssid)
+	if (ssid_length < 1 or ssid_length > 31):
+		print("[ERROR]-[{0}]-[wifi setting] invalid guest SSID name.".format(get_local_time()))
+		return
+	
+	textbox_ssid_guest = browser.find_elements_by_xpath(".//input[@type='text' and @name='ssid']")[2]
+	textbox_ssid_guest.clear()
+	textbox_ssid_guest.send_keys(ssid)
+	textbox_ssid_guest.click() # make the save button visible
+	print("[LOG]-[{0}]-[wifi setting] guest SSID is changed to {1}".format(get_local_time(), ssid))
 
 
 def testcase_wifi_24_on_off_switch():
@@ -103,5 +139,25 @@ def testcase_wifi_24_on_off_switch():
 	miwifi_wifi_panel_confirm_ok(browser)
 	miwifi_close_browser(browser)
 
+def testcase_wifi_modify_ssid():
+	browser = miwifi_open_browser(ROUTER_ADDRESS)
+	miwifi_login(browser, ROUTER_LOGIN_PASSWORD)
+	time.sleep(2) # wait for web page loading
+	miwifi_switch_to_normal_setting(browser)
+	
+	miwifi_wifi_24_input_ssid(browser, "wuxian_2.4G")
+	miwifi_wifi_24_save_config(browser)
+	miwifi_wifi_panel_confirm_ok(browser)
+
+	time.sleep(1) # wait for web page reloading
+	
+	miwifi_wifi_guest_input_ssid(browser, "wuxian_guest")
+	miwifi_wifi_guest_save_config(browser)
+	miwifi_wifi_panel_confirm_ok(browser)
+
+	miwifi_close_browser(browser)
+
 if __name__ == '__main__':
 	testcase_wifi_24_on_off_switch()
+
+	testcase_wifi_24_modify_ssid()
