@@ -1,14 +1,25 @@
 from selenium import webdriver
 from selenium.common.exceptions import NoSuchElementException
 import time
+import json
 
-ROUTER_LOGIN_PASSWORD = 'yangfan703'
-ROUTER_ADDRESS        = 'http://192.168.77.1'
+CONFIG_FILE_PATH      = './config.json'
+
+def config_get_pwd_from_file(file):
+	config = json.load(file)
+	return config["login_password"]
+
+def config_get_addr_from_file(file):
+	config = json.load(file)
+	return config["miwifi_address"]
 
 def get_local_time():
 	return time.asctime(time.localtime(time.time()))
 
-def miwifi_login(browser, pwd):
+def miwifi_login(browser):
+	file = open(CONFIG_FILE_PATH)
+	pwd = config_get_pwd_from_file(file)
+
 	try:
 		browser.find_element_by_id('password').send_keys(pwd)
 		browser.find_element_by_id('btnRtSubmit').click()
@@ -24,7 +35,11 @@ def miwifi_logout(browser):
 	except NoSuchElementException:
 		print("[FAILED] logout failed.")
 
-def miwifi_open_browser(address):
+def miwifi_open_browser():
+	file = open(CONFIG_FILE_PATH)
+	config = json.load(file)
+	address = config["miwifi_address"]
+
 	browser = webdriver.Chrome()
 	browser.get(address)
 	print("[LOG]-[{0}]: open the browser.".format(get_local_time()))
@@ -121,8 +136,8 @@ def miwifi_wifi_guest_input_ssid(browser, ssid):
 
 
 def testcase_wifi_24_on_off_switch():
-	browser = miwifi_open_browser(ROUTER_ADDRESS)
-	miwifi_login(browser, ROUTER_LOGIN_PASSWORD)
+	browser = miwifi_open_browser()
+	miwifi_login(browser)
 	time.sleep(2) # wait for web page loading
 	miwifi_switch_to_normal_setting(browser)
 	miwifi_wifi_24_switch_off(browser)
@@ -130,8 +145,8 @@ def testcase_wifi_24_on_off_switch():
 	miwifi_wifi_panel_confirm_ok(browser)
 	miwifi_close_browser(browser)
 
-	browser = miwifi_open_browser(ROUTER_ADDRESS)
-	miwifi_login(browser, ROUTER_LOGIN_PASSWORD)
+	browser = miwifi_open_browser()
+	miwifi_login(browser)
 	time.sleep(2) # wait for web page loading
 	miwifi_switch_to_normal_setting(browser)
 	miwifi_wifi_24_switch_on(browser)
@@ -140,8 +155,8 @@ def testcase_wifi_24_on_off_switch():
 	miwifi_close_browser(browser)
 
 def testcase_wifi_modify_ssid():
-	browser = miwifi_open_browser(ROUTER_ADDRESS)
-	miwifi_login(browser, ROUTER_LOGIN_PASSWORD)
+	browser = miwifi_open_browser()
+	miwifi_login(browser)
 	time.sleep(2) # wait for web page loading
 	miwifi_switch_to_normal_setting(browser)
 	
@@ -159,5 +174,5 @@ def testcase_wifi_modify_ssid():
 
 if __name__ == '__main__':
 	testcase_wifi_24_on_off_switch()
-
 	testcase_wifi_24_modify_ssid()
+
