@@ -3,7 +3,7 @@ from selenium.common.exceptions import NoSuchElementException
 import time
 import json
 
-CONFIG_FILE_PATH      = './config.json'
+CONFIG_FILE_PATH = './config.json'
 
 def config_get_pwd_from_file(file):
 	config = json.load(file)
@@ -53,7 +53,7 @@ def miwifi_close_browser(browser):
 def miwifi_switch_to_normal_setting(browser):
 	browser.find_element_by_link_text(u"常用设置").click()
 	print("[LOG]-[{0}]-[status]: switch to normal setting.".format(get_local_time()))
-	time.sleep(1)
+	time.sleep(2) # wait for web page laoding
 
 def miwifi_wifi_24_save_config(browser):
 	browser.find_elements_by_xpath(".//button[@type='submit']")[0].click()
@@ -81,10 +81,12 @@ def miwifi_wifi_panel_confirm_close(browser):
 	print("[LOG]-[{0}]-[wifi setting confirm panel] close panel.".format(get_local_time()))
 
 def miwifi_wifi_24_switch_on(browser):
-	browser.find_elements_by_xpath(".//input[@type='radio' and @value='1']")[0].click()
+	radio_buttons = browser.find_elements_by_xpath(".//input[@type='radio' and @value='1']")
+	radio_buttons[0].click()
 
 def miwifi_wifi_24_switch_off(browser):
-	browser.find_elements_by_xpath(".//input[@type='radio' and @value='0']")[0].click()
+	radio_buttons = browser.find_elements_by_xpath(".//input[@type='radio' and @value='0']")
+	radio_buttons[0].click()
 
 def miwifi_wifi_24_input_ssid(browser, ssid):
 	ssid_length = len(ssid)
@@ -99,10 +101,12 @@ def miwifi_wifi_24_input_ssid(browser, ssid):
 	print("[LOG]-[{0}]-[wifi setting] 2.4G SSID is changed to {1}".format(get_local_time(), ssid))
 
 def miwifi_wifi_50_switch_on(browser):
-	browser.find_elements_by_xpath(".//input[@type='radio' and @value='1']")[1].click()
+	radio_buttons = browser.find_elements_by_xpath(".//input[@type='radio' and @value='1']")
+	radio_buttons[1].click()
 
 def miwifi_wifi_50_switch_off(browser):
-	browser.find_elements_by_xpath(".//input[@type='radio' and @value='0']")[1].click()
+	radio_buttons = browser.find_elements_by_xpath(".//input[@type='radio' and @value='0']")
+	radio_buttons[1].click()
 
 def miwifi_wifi_50_input_ssid(browser, ssid):
 	ssid_length = len(ssid)
@@ -117,10 +121,12 @@ def miwifi_wifi_50_input_ssid(browser, ssid):
 	print("[LOG]-[{0}]-[wifi setting] 5.0G SSID is changed to {1}".format(get_local_time(), ssid))
 
 def miwifi_wifi_guest_switch_on(browser):
-	browser.find_elements_by_xpath(".//input[@type='radio' and @value='1']")[2].click()
+	radio_buttons = browser.find_elements_by_xpath(".//input[@type='radio' and @value='1']")
+	radio_buttons[2].click()
 
 def miwifi_wifi_guest_switch_off(browser):
-	browser.find_elements_by_xpath(".//input[@type='radio' and @value='0']")[2].click()
+	radio_buttons = browser.find_elements_by_xpath(".//input[@type='radio' and @value='0']")
+	radio_buttons[2].click()
 
 def miwifi_wifi_guest_input_ssid(browser, ssid):
 	ssid_length = len(ssid)
@@ -140,6 +146,7 @@ def testcase_wifi_24_on_off_switch():
 	miwifi_login(browser)
 	time.sleep(2) # wait for web page loading
 	miwifi_switch_to_normal_setting(browser)
+
 	miwifi_wifi_24_switch_off(browser)
 	miwifi_wifi_24_save_config(browser)
 	miwifi_wifi_panel_confirm_ok(browser)
@@ -164,7 +171,7 @@ def testcase_wifi_modify_ssid():
 	miwifi_wifi_24_save_config(browser)
 	miwifi_wifi_panel_confirm_ok(browser)
 
-	time.sleep(1) # wait for web page reloading
+	time.sleep(4) # wait for web page reloading
 	
 	miwifi_wifi_guest_input_ssid(browser, "wuxian_guest")
 	miwifi_wifi_guest_save_config(browser)
@@ -174,5 +181,5 @@ def testcase_wifi_modify_ssid():
 
 if __name__ == '__main__':
 	testcase_wifi_24_on_off_switch()
-	testcase_wifi_24_modify_ssid()
+	testcase_wifi_modify_ssid()
 
