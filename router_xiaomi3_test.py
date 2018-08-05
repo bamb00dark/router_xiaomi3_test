@@ -3,10 +3,10 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions
 from selenium.webdriver.common.by import By
 from selenium.common.exceptions import NoSuchElementException
+from device_config import miwifi_config
 import time
 import json
 
-CONFIG_FILE_PATH = './config.json'
 g_time_wait_apply_config = 30
 g_time_wait_reload_page  = 5
 g_time_wait_reboot       = 120
@@ -16,21 +16,12 @@ XPATH_WIFI_24_SSID    = ".//form[@id='wifiset24']/div[@class='form-item form-ite
 XPATH_WIFI_50_SSID    = ".//form[@id='wifiset50']/div[@class='form-item form-item-input']/span/input"
 XPATH_WIFI_GUEST_SSID = ".//form[@id='wifisetguest']/div[@class='form-item form-item-input']/span/input"
 
-
-def config_get_pwd_from_file(file):
-	config = json.load(file)
-	return config["login_password"]
-
-def config_get_addr_from_file(file):
-	config = json.load(file)
-	return config["miwifi_address"]
-
 def get_local_time():
 	return time.asctime(time.localtime(time.time()))
 
 def miwifi_login(browser):
-	file = open(CONFIG_FILE_PATH)
-	pwd = config_get_pwd_from_file(file)
+	config = miwifi_config()
+	pwd = config.get_login_pwd()
 
 	try:
 		browser.find_element_by_id('password').send_keys(pwd)
@@ -58,12 +49,11 @@ def miwifi_reboot(browser):
 		print("[FAILED] reboot failed.")
 
 def miwifi_open_browser():
-	file = open(CONFIG_FILE_PATH)
-	config = json.load(file)
-	address = config["miwifi_address"]
+	config = miwifi_config()
+	url = config.get_url()
 
 	browser = webdriver.Chrome()
-	browser.get(address)
+	browser.get(url)
 	print("[LOG]-[{0}]: open the browser.".format(get_local_time()))
 
 	return browser
@@ -215,9 +205,9 @@ def testcase_reboot_device():
 
 if __name__ == '__main__':
 	#testcase_wifi_24_on_off_switch()
-	#testcase_wifi_modify_ssid()
+	testcase_wifi_modify_ssid()
 
-	testcase_reboot_device()
+	#testcase_reboot_device()
 
 	while True:
 		time.sleep(1)
